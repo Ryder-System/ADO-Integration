@@ -17,17 +17,18 @@ async function main() {
 
         let vm = [];
 
-        if (debug) {
-            // manually set when debugging
-            env.ado_organization = "ryder-vsts";
-            env.ado_token = "c2ozuk24d7l2pztxpdepswzrbyhgvp2sdhkiif3b3o2doaxonzhq";
-            env.github_token = "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";
-            env.ado_project = "ITS";
-            env.ado_wit = "bug";
-            env.ado_close_state = "Closed";
-            env.ado_active_state = "Active";
-            env.ado_new_state = "New";
-            env.log_level = 301;
+		if (debug) {
+			// manually set when debugging
+			env.ado_organization = "{organization}";
+			env.ado_token = "{azure devops personal access token}";
+			env.github_token = "{github token}";
+			env.ado_project = "{project name}";
+			env.ado_wit = "User Story";
+			env.ado_close_state = "Closed";
+			env.ado_active_state = "Active";
+			env.ado_new_state = "New";
+			env.log_level = 100;
+			env.defaul_ado_wi_parent_url = "{Default work item parent url}";
 
             console.log("Set values from test payload");
             vm = getValuesFromPayload(testPayload, env);
@@ -710,7 +711,7 @@ function getValuesFromPayload(payload, env) {
             activeState: env.ado_active_state != undefined ? env.ado_active_state : "Active",
             bypassRules: env.ado_bypassrules != undefined ? env.ado_bypassrules : false,
             logLevel: env.log_level != undefined ? env.log_level : 100,
-            parentWorkItemUrl: env.ado_parentWorkItemUrl != undefined ? env.ado_parentWorkItemUrl : ""
+            parentWorkItemUrl: env.defaul_ado_wi_parent_url != undefined ? env.defaul_ado_wi_parent_url : "",
         }
     };
 
