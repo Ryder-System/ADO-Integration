@@ -3,7 +3,7 @@ const github = require(`@actions/github`);
 const azdev = require('azure-devops-node-api');
 const showdown = require('showdown');
 
-const debug = false; // debug mode for testing...always set to false before doing a commit
+const debug = true; // debug mode for testing...always set to false before doing a commit
 const testPayload = []; // used for debugging, cut and paste payload
 
 main();
@@ -698,7 +698,7 @@ function getValuesFromPayload(payload, env) {
             activeState: env.ado_active_state != undefined ? env.ado_active_state : "Active",
             bypassRules: env.ado_bypassrules != undefined ? env.ado_bypassrules : false,
             logLevel: env.log_level != undefined ? env.log_level : 100,
-            parentWorkItemUrl: env.ado_parentWorkItem != undefined ? env.ado_parentWorkItem : ""
+            parentWorkItemUrl: ""
         }
     };
 
