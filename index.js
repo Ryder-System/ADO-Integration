@@ -3,7 +3,7 @@ const github = require(`@actions/github`);
 const azdev = require('azure-devops-node-api');
 const showdown = require('showdown');
 
-const debug = true; // debug mode for testing...always set to false before doing a commit
+const debug = false; // debug mode for testing...always set to false before doing a commit
 const testPayload = []; // used for debugging, cut and paste payload
 
 main();
