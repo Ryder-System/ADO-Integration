@@ -698,7 +698,7 @@ function getValuesFromPayload(payload, env) {
             activeState: env.ado_active_state != undefined ? env.ado_active_state : "Active",
             bypassRules: env.ado_bypassrules != undefined ? env.ado_bypassrules : false,
             logLevel: env.log_level != undefined ? env.log_level : 100,
-            parentWorkItemUrl: ""
+            parentWorkItemUrl: env.ado_parentWorkItem != undefined ? env.ado_parentWorkItem : ""
         }
     };
 
