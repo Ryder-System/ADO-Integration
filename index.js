@@ -3,7 +3,7 @@ const github = require(`@actions/github`);
 const azdev = require('azure-devops-node-api');
 const showdown = require('showdown');
 
-const debug = true; // debug mode for testing...always set to false before doing a commit
+const debug = false; // debug mode for testing...always set to false before doing a commit
 const testPayload = []; // used for debugging, cut and paste payload
 
 main();
@@ -18,16 +18,16 @@ async function main() {
         let vm = [];
 
         if (debug) {
-             // manually set when debugging
-			env.ado_organization = "{organization}";
-			env.ado_token = "{azure devops personal access token}";
-			env.github_token = "{github token}";
-			env.ado_project = "{project name}";
-			env.ado_wit = "User Story";
-			env.ado_close_state = "Closed";
-			env.ado_active_state = "Active";
-			env.ado_new_state = "New";
-			env.log_level = 100;
+            // manually set when debugging
+            env.ado_organization = "ryder-vsts";
+            env.ado_token = "c2ozuk24d7l2pztxpdepswzrbyhgvp2sdhkiif3b3o2doaxonzhq";
+            env.github_token = "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";
+            env.ado_project = "ITS";
+            env.ado_wit = "bug";
+            env.ado_close_state = "Closed";
+            env.ado_active_state = "Active";
+            env.ado_new_state = "New";
+            env.log_level = 301;
 
             console.log("Set values from test payload");
             vm = getValuesFromPayload(testPayload, env);
@@ -238,6 +238,18 @@ async function create(vm) {
             }
         });
     }
+
+    if(vm.labels.length > 0){
+        vm.labels.array.forEach(element => {
+            patchDocument.push({
+                op: "add",
+                path: "/fields/System.Tags",
+                value: workItem.fields["System.Tags"] + ", " + element.replace(/\p{Emoji}/gu, ''),
+            });
+        });
+    }
+
+    
 
     // verbose logging
     if (vm.env.logLevel >= 300) {
@@ -679,7 +691,7 @@ function getValuesFromPayload(payload, env) {
         closed_at: payload.issue.closed_at != undefined ? payload.issue.closed_at : null,
         owner: payload.repository.owner != undefined ? payload.repository.owner.login : "",
         sender_login: payload.sender.login != undefined ? payload.sender.login : '',
-        label: "",
+        labels: [],
         comment_text: "",
         comment_url: "",
         organization: "",
@@ -702,9 +714,23 @@ function getValuesFromPayload(payload, env) {
         }
     };
 
-    // label is not always part of the payload
-    if (payload.label != undefined) {
-        vm.label = payload.label.name != undefined ? payload.label.name : "";
+    // label is not always part of the payload. most of the time is for labeled action
+    if (payload.label != undefined && payload.label.name != undefined) {
+        vm.labels.push(payload.label.name);
+    }
+
+    // add labels. 
+    if(payload.issue != label && payload.issue.labels.length > 0){
+        payload.issue.labels.forEach(element => {
+            if(!vm.labels.includes(element.name)){
+                vm.labels.push(element.name);
+            }
+        });
+    }
+
+    // update title of the issue if there is a label with name 'qa bug'
+    if(vm.labels.includes('qa bug')){
+        vm.title = `${vm.title.replace(" - [Production Support]", "").replace("[Production Support]", "")} - [Production Support]`;
     }
 
     // comments are not always part of the payload
@@ -734,7 +760,7 @@ async  function enrichingValuesBasedOnBodyReferences(vm){
     // check for a reference to a parent work item id ADOP# syntax
     console.log("Looking for ADOP# syntax in the body.");
     let matchResult = vm.body.match(/ADOP#([^\s]+)/g);
-    if(matchResult.length > 0){
+    if(matchResult != null &&  matchResult.length > 0){
         if (matchResult.length > 1) {
             console.log("Multiple references of ADOP# were found. We will use the first one.");
         }
@@ -769,7 +795,6 @@ async  function enrichingValuesBasedOnBodyReferences(vm){
             matchResult.forEach(element => {
                 vm.body.replace(element, ""); 
             });
-            vm.body.replace()
         }
     }
     else{
