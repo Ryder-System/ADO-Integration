@@ -241,7 +241,7 @@ async function create(vm) {
     }
 
     if(vm.labels.length > 0){
-        vm.labels.array.forEach(element => {
+        vm.labels.forEach(element => {
             patchDocument.push({
                 op: "add",
                 path: "/fields/System.Tags",
