@@ -240,7 +240,7 @@ async function create(vm) {
         });
     }
 
-    if(vm.labels.length > 0){
+    /*if(vm.labels.length > 0){
         vm.labels.forEach(element => {
             patchDocument.push({
                 op: "add",
@@ -248,7 +248,7 @@ async function create(vm) {
                 value: workItem.fields["System.Tags"] + ", " + element.replace(/\p{Emoji}/gu, ''),
             });
         });
-    }
+    }*/
 
     
 
