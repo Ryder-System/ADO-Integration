@@ -158,7 +158,7 @@ async function create(vm) {
         {
             op: "add",
             path: "/fields/System.Title",
-            value: vm.title + ` (GitHub Issue #${vm.number})`
+            value: vm.title + ` (GHI Issue #${vm.number})`
         },
         {
             op: "add",
@@ -306,12 +306,12 @@ async function update(vm, workItem) {
 
     if (
         workItem.fields["System.Title"] !=
-        `${vm.title} (GitHub Issue #${vm.number})`
+        `${vm.title} (GHI #${vm.number})`
     ) {
         patchDocument.push({
             op: "add",
             path: "/fields/System.Title",
-            value: vm.title + " (GitHub Issue #" + vm.number + ")",
+            value: vm.title + " (GHI #" + vm.number + ")",
         });
     }
 
@@ -523,7 +523,7 @@ async function find(vm) {
 
     let wiql = {
         query:
-            "SELECT [System.Id], [System.WorkItemType], [System.Description], [System.Title], [System.AssignedTo], [System.State], [System.Tags] FROM workitems WHERE [System.TeamProject] = @project AND [System.Title] CONTAINS '(GitHub Issue #" +
+            "SELECT [System.Id], [System.WorkItemType], [System.Description], [System.Title], [System.AssignedTo], [System.State], [System.Tags] FROM workitems WHERE [System.TeamProject] = @project AND [System.Title] CONTAINS '(GHI #" +
             vm.number +
             ")' AND [System.Tags] CONTAINS 'GitHub Issue' AND [System.Tags] CONTAINS '" +
             vm.repository +
