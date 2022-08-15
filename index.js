@@ -31,7 +31,7 @@ async function main() {
 			env.defaul_ado_wi_parent_url = "{Default work item parent url}";
 
             console.log("Set values from test payload");
-            vm = getValuesFromPayload(testPayload, env);
+            vm = getValuesFromPayload(testPayload, env)
         } else {
             console.log("Set values from payload & env");
             vm = getValuesFromPayload(github.context.payload, env);
@@ -158,7 +158,7 @@ async function create(vm) {
         {
             op: "add",
             path: "/fields/System.Title",
-            value: vm.title + ` (GHI Issue #${vm.number})`
+            value: vm.title + ` (GHI #${vm.number})`
         },
         {
             op: "add",
