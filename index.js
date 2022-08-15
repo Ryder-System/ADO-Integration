@@ -306,12 +306,12 @@ async function update(vm, workItem) {
 
     if (
         workItem.fields["System.Title"] !=
-        `${vm.title} (GitHub Issue #${vm.number})`
+        `${vm.title} (GHI #${vm.number})`
     ) {
         patchDocument.push({
             op: "add",
             path: "/fields/System.Title",
-            value: vm.title + " (GitHub Issue #" + vm.number + ")",
+            value: vm.title + " (GHI #" + vm.number + ")",
         });
     }
 
