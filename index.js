@@ -158,7 +158,7 @@ async function create(vm) {
         {
             op: "add",
             path: "/fields/System.Title",
-            value: vm.title + ` (GitHub Issue #${vm.number})`
+            value: vm.title + ` (GHI #${vm.number})`
         },
         {
             op: "add",
@@ -731,7 +731,7 @@ function getValuesFromPayload(payload, env) {
 
     // update title of the issue if there is a label with name 'qa bug'
     if(vm.labels.includes('qa bug')){
-        vm.title = `${vm.title.replace(" - [Production Support]", "").replace("[Production Support]", "")} - [Production Support]`;
+        vm.title = `${vm.title.replace(" - [Prod Support]", "").replace("[Prod Support]", "")} - [Prod Support]`;
     }
 
     // comments are not always part of the payload
