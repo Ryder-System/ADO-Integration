@@ -758,19 +758,19 @@ function getValuesFromPayload(payload, env) {
 }
 
 async  function enrichingValuesBasedOnBodyReferences(vm){
-    // check for a reference to a parent work item id ADOP# syntax
-    console.log("Looking for ADOP# syntax in the body.");
-    let matchResult = vm.body.match(/ADOP#([^\s]+)/g);
+    // check for a reference to a parent work item id ADO# syntax
+    console.log("Looking for ADO# syntax in the body.");
+    let matchResult = vm.body.match(/ADO#([^\s]+)/g);
     if(matchResult != null &&  matchResult.length > 0){
         if (matchResult.length > 1) {
-            console.log("Multiple references of ADOP# were found. We will use the first one.");
+            console.log("Multiple references of ADO# were found. We will use the first one.");
         }
         // verbose logging
         if (vm.env.logLevel >= 300) {
-            console.log("Print match results for ADOP#: ");
+            console.log("Print match results for ADO#: ");
             console.log(matchResult);
         }
-        let parentWorkItemId = matchResult[0].replace("ADOP#", "");
+        let parentWorkItemId = matchResult[0].replace("ADO#", "");
         // verbose logging
         if (vm.env.logLevel >= 300) {
             console.log(`Parent work item  ID: ${parentWorkItemId}`);
@@ -799,7 +799,7 @@ async  function enrichingValuesBasedOnBodyReferences(vm){
         }
     }
     else{
-        console.log("No reference of ADOP# was found.");
+        console.log("No reference of ADO# was found.");
     }
     
     // verbose logging
