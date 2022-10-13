@@ -28,7 +28,7 @@ async function main() {
 			env.ado_active_state = "Active";
 			env.ado_new_state = "New";
 			env.log_level = 100;
-			env.defaul_ado_wi_parent_url = "{Default work item parent url}";
+			env.default_ado_wi_parent_url = "{Default work item parent url}";
 
             console.log("Set values from test payload");
             vm = getValuesFromPayload(testPayload, env)
@@ -711,7 +711,7 @@ function getValuesFromPayload(payload, env) {
             activeState: env.ado_active_state != undefined ? env.ado_active_state : "Active",
             bypassRules: env.ado_bypassrules != undefined ? env.ado_bypassrules : false,
             logLevel: env.log_level != undefined ? env.log_level : 100,
-            parentWorkItemUrl: env.defaul_ado_wi_parent_url != undefined ? env.defaul_ado_wi_parent_url : "",
+            parentWorkItemUrl: env.default_ado_wi_parent_url != undefined ? env.default_ado_wi_parent_url : "",
         }
     };
 
