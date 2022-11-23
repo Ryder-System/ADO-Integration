@@ -272,7 +272,7 @@ async function create(vm) {
                 console.log("Log Info: getTeamIterations second else");
                 console.log("Log Info: getTeamIterations " + iterations[0].path);
                 
-              if (env.ado_area_path !== '') {
+              if (vm.env.ado_area_path !== '') {
                 patchDocument.push({
                     op: 'add',
                     path: '/fields/System.IterationPath',
