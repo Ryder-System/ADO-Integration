@@ -28,7 +28,7 @@ async function main() {
 			env.ado_active_state = "Active";
 			env.ado_new_state = "New";
 			env.log_level = 100;
-			env.default_ado_wi_parent_url = "{Default work item parent url}";
+			env.defaul_ado_wi_parent_url = "{Default work item parent url}";
 
             console.log("Set values from test payload");
             vm = getValuesFromPayload(testPayload, env)
@@ -209,15 +209,6 @@ async function create(vm) {
         });
     }
 
-    // if iteration path is not empty, set it
-    if (vm.env.iterationPath != "") {
-        patchDocument.push({
-            op: "add",
-            path: "/fields/System.IterationPath",
-            value: vm.env.iterationPath
-        });
-    }
-
     // if the bypassrules are on, then use the issue.sender.user.name value for the person
     // who created the issue
     if (vm.env.bypassRules) {
@@ -250,8 +241,6 @@ async function create(vm) {
         });
     }*/
 
-    
-
     // verbose logging
     if (vm.env.logLevel >= 300) {
         console.log("Print full patch object:");
@@ -262,6 +251,38 @@ async function create(vm) {
     let connection = new azdev.WebApi(vm.env.orgUrl, authHandler);
     let client = await connection.getWorkItemTrackingApi();
     let workItemSaveResult = null;
+
+    try {
+        if(vm.env.team != null || vm.env.team != undefined || vm.env.team != ''){
+            const client_work = yield connection.getWorkApi();
+            const teamContext = { project: vm.env.project, team: vm.env.team};
+                const iterations = yield client_work.getTeamIterations(teamContext,'current');
+            // check to see if the work item is null or undefined
+            if (iterations === null || iterations === undefined) {
+              console.log("Error getting current iteration: iteration is null or undefined");
+            }
+            else {
+              if (env.ado_area_path !== '') {
+                patchDocument.push({
+                    op: 'add',
+                    path: '/fields/System.IterationPath',
+                    value: iterations[0].path
+                });
+              }
+            }
+          }
+    
+          // if iteration path is not empty, set it
+            /*if (vm.env.iterationPath != "") {
+                patchDocument.push({
+                    op: "add",
+                    path: "/fields/System.IterationPath",
+                    value: vm.env.iterationPath
+                });
+            }*/
+    } catch (error){
+
+    }
 
     try {
         workItemSaveResult = await client.createWorkItem(
@@ -703,6 +724,7 @@ function getValuesFromPayload(payload, env) {
             adoToken: env.ado_token != undefined ? env.ado_token : "",
             ghToken: env.github_token != undefined ? env.github_token : "",
             project: env.ado_project != undefined ? env.ado_project : "",
+            team: env.ado_team != undefined ? env.ado_team : "",
             areaPath: env.ado_area_path != undefined ? env.ado_area_path : "",
             iterationPath: env.ado_iteration_path != undefined ? env.ado_iteration_path : "",
             wit: env.ado_wit != undefined ? env.ado_wit : "Issue",
@@ -711,7 +733,7 @@ function getValuesFromPayload(payload, env) {
             activeState: env.ado_active_state != undefined ? env.ado_active_state : "Active",
             bypassRules: env.ado_bypassrules != undefined ? env.ado_bypassrules : false,
             logLevel: env.log_level != undefined ? env.log_level : 100,
-            parentWorkItemUrl: env.default_ado_wi_parent_url != undefined ? env.default_ado_wi_parent_url : "",
+            parentWorkItemUrl: env.defaul_ado_wi_parent_url != undefined ? env.defaul_ado_wi_parent_url : "",
         }
     };
 
