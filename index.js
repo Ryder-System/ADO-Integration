@@ -258,13 +258,20 @@ async function create(vm) {
     let workItemSaveResult = null;
 
     try {
+        console.log("Log Info: getTeamIterations inside Try");
+
         if(vm.env.team != null || vm.env.team != undefined || vm.env.team != ''){
+            console.log("Log Info: getTeamIterations inside if");
+
             const iterations = await client_work.getTeamIterations(teamContext,'current');
             // check to see if the work item is null or undefined
             if (iterations === null || iterations === undefined) {
               console.log("Error getting current iteration: iteration is null or undefined");
             }
             else {
+                console.log("Log Info: getTeamIterations second else");
+                console.log("Log Info: getTeamIterations " + iterations[0].path);
+                
               if (env.ado_area_path !== '') {
                 patchDocument.push({
                     op: 'add',
@@ -284,7 +291,9 @@ async function create(vm) {
                 });
             }*/
     } catch (error){
-
+        console.log("Error: getTeamIterations failed");
+        console.log(error);
+        core.setFailed(error);
     }
 
     try {
