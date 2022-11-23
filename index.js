@@ -249,14 +249,17 @@ async function create(vm) {
 
     let authHandler = azdev.getPersonalAccessTokenHandler(vm.env.adoToken);
     let connection = new azdev.WebApi(vm.env.orgUrl, authHandler);
+
+    let client_work = await connection.getWorkApi();
+    let teamContext = { project: vm.env.project, team: vm.env.team};
+    let iterations = null;
+
     let client = await connection.getWorkItemTrackingApi();
     let workItemSaveResult = null;
 
     try {
         if(vm.env.team != null || vm.env.team != undefined || vm.env.team != ''){
-            const client_work = yield connection.getWorkApi();
-            const teamContext = { project: vm.env.project, team: vm.env.team};
-                const iterations = yield client_work.getTeamIterations(teamContext,'current');
+            const iterations = await client_work.getTeamIterations(teamContext,'current');
             // check to see if the work item is null or undefined
             if (iterations === null || iterations === undefined) {
               console.log("Error getting current iteration: iteration is null or undefined");
