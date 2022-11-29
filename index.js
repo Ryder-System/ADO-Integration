@@ -250,13 +250,7 @@ async function create(vm) {
 
         if(vm.env.parentWorkItemId != null || vm.env.parentWorkItemId != undefined || vm.env.parentWorkItemId != ''){
 
-            //var workItem = await client.getWorkItem(workItemId, null, null, 4);
-            console.log(vm.env.parentWorkItemId)
-            console.log(vm.env.ado_project)
-
-            var workitemPaths = await client.getWorkItem(vm.env.parentWorkItemId,undefined, undefined, undefined, vm.env.ado_project);
-
-            console.log(workitemPaths)
+            var workitemPaths = await client.getWorkItem(vm.env.parentWorkItemId,undefined, undefined, undefined, vm.env.project);
 
             // check to see if the work item is null or undefined
             if (workitemPaths === null || workitemPaths === undefined) {
@@ -276,9 +270,9 @@ async function create(vm) {
                 value: workitemPaths.fields["System.AreaPath"]
               });
 
-              console.log(JSON.stringify(workitemPaths))
-              console.log(workitemPaths.fields["System.AreaPath"])
-              console.log(workitemPaths.fields["System.IterationPath"])
+              //console.log(JSON.stringify(workitemPaths))
+              //console.log(workitemPaths.fields["System.AreaPath"])
+              //console.log(workitemPaths.fields["System.IterationPath"])
 
             }
 
