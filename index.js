@@ -250,7 +250,9 @@ async function create(vm) {
 
         if(vm.env.parentWorkItemId != null || vm.env.parentWorkItemId != undefined || vm.env.parentWorkItemId != ''){
 
-            const workitemPaths = yield client.getWorkItem(vm.env.parentWorkItemId,undefined, undefined, undefined, vm.env.ado_project);
+            //var workItem = await client.getWorkItem(workItemId, null, null, 4);
+
+            var workitemPaths = await client.getWorkItem(vm.env.parentWorkItemId,undefined, undefined, undefined, vm.env.ado_project);
             // check to see if the work item is null or undefined
             if (workitemPaths === null || workitemPaths === undefined) {
               console.log("Error getting parent workitem paths: workitemPaths is null or undefined");
