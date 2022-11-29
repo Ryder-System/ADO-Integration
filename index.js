@@ -825,7 +825,7 @@ async  function enrichingValuesBasedOnBodyReferences(vm){
         console.log("No reference of ADO# was found.");
 
         console.log("Getting the details of the default Parent work item.");
-        let parentWorkItem = await findWorkItem(vm, parentWorkItemId);
+        let parentWorkItem = await findWorkItem(vm, vm.env.parentWorkItemId);
         
         // if parentWorkItem == -1 then we have an error during find
         if (parentWorkItem === -1) {
