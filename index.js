@@ -29,6 +29,7 @@ async function main() {
 			env.ado_new_state = "New";
 			env.log_level = 100;
 			env.defaul_ado_wi_parent_url = "{Default work item parent url}";
+			env.defaul_ado_wi_parent_id = "{Default work item parent id}";
 
             console.log("Set values from test payload");
             vm = getValuesFromPayload(testPayload, env)
@@ -200,15 +201,6 @@ async function create(vm) {
         }
     ];
 
-    // if area path is not empty, set it
-    if (vm.env.areaPath != "") {
-        patchDocument.push({
-            op: "add",
-            path: "/fields/System.AreaPath",
-            value: vm.env.areaPath
-        });
-    }
-
     // if the bypassrules are on, then use the issue.sender.user.name value for the person
     // who created the issue
     if (vm.env.bypassRules) {
@@ -250,46 +242,41 @@ async function create(vm) {
     let authHandler = azdev.getPersonalAccessTokenHandler(vm.env.adoToken);
     let connection = new azdev.WebApi(vm.env.orgUrl, authHandler);
 
-    let client_work = await connection.getWorkApi();
-    let teamContext = { project: vm.env.project, team: vm.env.team};
-    let iterations = null;
-
     let client = await connection.getWorkItemTrackingApi();
     let workItemSaveResult = null;
 
     try {
         console.log("Log Info: getTeamIterations inside Try");
 
-        if(vm.env.team != null || vm.env.team != undefined || vm.env.team != ''){
-            console.log("Log Info: getTeamIterations inside if");
+        if(vm.env.parentWorkItemId != null || vm.env.parentWorkItemId != undefined || vm.env.parentWorkItemId != ''){
 
-            const iterations = await client_work.getTeamIterations(teamContext,'current');
+            const workitemPaths = yield client.getWorkItem(vm.env.parentWorkItemId,undefined, undefined, undefined, vm.env.ado_project);
             // check to see if the work item is null or undefined
-            if (iterations === null || iterations === undefined) {
-              console.log("Error getting current iteration: iteration is null or undefined");
+            if (workitemPaths === null || workitemPaths === undefined) {
+              console.log("Error getting parent workitem paths: workitemPaths is null or undefined");
             }
             else {
-                console.log("Log Info: getTeamIterations second else");
-                console.log("Log Info: getTeamIterations " + iterations[0].path);
-                
-              if (vm.env.ado_area_path !== '') {
-                patchDocument.push({
-                    op: 'add',
-                    path: '/fields/System.IterationPath',
-                    value: iterations[0].path
-                });
-              }
+
+              patchDocument.push({
+                op: 'add',
+                path: '/fields/System.IterationPath',
+                value: workitemPaths.fields["System.IterationPath"]
+              });
+            
+              patchDocument.push({
+                op: 'add',
+                path: '/fields/System.AreaPath',
+                value: workitemPaths.fields["System.AreaPath"]
+              });
+
+              console.log(JSON.stringify(workitemPaths))
+              console.log(workitemPaths.fields["System.AreaPath"])
+              console.log(workitemPaths.fields["System.IterationPath"])
+
             }
+
           }
-    
-          // if iteration path is not empty, set it
-            /*if (vm.env.iterationPath != "") {
-                patchDocument.push({
-                    op: "add",
-                    path: "/fields/System.IterationPath",
-                    value: vm.env.iterationPath
-                });
-            }*/
+        
     } catch (error){
         console.log("Error: getTeamIterations failed");
         console.log(error);
@@ -746,6 +733,7 @@ function getValuesFromPayload(payload, env) {
             bypassRules: env.ado_bypassrules != undefined ? env.ado_bypassrules : false,
             logLevel: env.log_level != undefined ? env.log_level : 100,
             parentWorkItemUrl: env.defaul_ado_wi_parent_url != undefined ? env.defaul_ado_wi_parent_url : "",
+            parentWorkItemId: env.defaul_ado_wi_parent_id != undefined ? env.defaul_ado_wi_parent_id : "",
         }
     };
 
@@ -824,6 +812,7 @@ async  function enrichingValuesBasedOnBodyReferences(vm){
             console.log(`Invalid Parent work item ID. No parent will be added.`);
         }
         else{
+            vm.env.parentWorkItemId = parentWorkItemId;
             vm.env.parentWorkItemUrl = parentWorkItem.url;
             console.log("A parent work item URL was added.");
             // removing references from body
