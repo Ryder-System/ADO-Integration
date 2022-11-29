@@ -739,8 +739,8 @@ function getValuesFromPayload(payload, env) {
             activeState: env.ado_active_state != undefined ? env.ado_active_state : "Active",
             bypassRules: env.ado_bypassrules != undefined ? env.ado_bypassrules : false,
             logLevel: env.log_level != undefined ? env.log_level : 100,
-            parentWorkItemUrl: env.defaul_ado_wi_parent_url != undefined ? env.defaul_ado_wi_parent_url : "",
-            parentWorkItemId: env.defaul_ado_wi_parent_id != undefined ? env.defaul_ado_wi_parent_id : "",
+            parentWorkItemUrl: env.default_ado_wi_parent_url != undefined ? env.default_ado_wi_parent_url : "",
+            parentWorkItemId: env.default_ado_wi_parent_id != undefined ? env.default_ado_wi_parent_id : "",
         }
     };
 
