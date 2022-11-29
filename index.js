@@ -724,7 +724,6 @@ function getValuesFromPayload(payload, env) {
             adoToken: env.ado_token != undefined ? env.ado_token : "",
             ghToken: env.github_token != undefined ? env.github_token : "",
             project: env.ado_project != undefined ? env.ado_project : "",
-            team: env.ado_team != undefined ? env.ado_team : "",
             areaPath: env.ado_area_path != undefined ? env.ado_area_path : "",
             iterationPath: env.ado_iteration_path != undefined ? env.ado_iteration_path : "",
             wit: env.ado_wit != undefined ? env.ado_wit : "Issue",
@@ -733,7 +732,7 @@ function getValuesFromPayload(payload, env) {
             activeState: env.ado_active_state != undefined ? env.ado_active_state : "Active",
             bypassRules: env.ado_bypassrules != undefined ? env.ado_bypassrules : false,
             logLevel: env.log_level != undefined ? env.log_level : 100,
-            parentWorkItemUrl: env.default_ado_wi_parent_url != undefined ? env.default_ado_wi_parent_url : "",
+            //parentWorkItemUrl: env.default_ado_wi_parent_url != undefined ? env.default_ado_wi_parent_url : "",
             parentWorkItemId: env.default_ado_wi_parent_id != undefined ? env.default_ado_wi_parent_id : "",
         }
     };
@@ -824,6 +823,21 @@ async  function enrichingValuesBasedOnBodyReferences(vm){
     }
     else{
         console.log("No reference of ADO# was found.");
+
+        console.log("Getting the details of the default Parent work item.");
+        let parentWorkItem = await findWorkItem(vm, parentWorkItemId);
+        
+        // if parentWorkItem == -1 then we have an error during find
+        if (parentWorkItem === -1) {
+            console.log("Parent Work item value is -1, exiting action");
+            core.setFailed();
+            return;
+        } else {
+
+            vm.env.parentWorkItemUrl = parentWorkItem.url;
+        
+        }
+
     }
     
     // verbose logging
