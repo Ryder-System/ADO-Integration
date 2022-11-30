@@ -28,7 +28,8 @@ async function main() {
 			env.ado_active_state = "Active";
 			env.ado_new_state = "New";
 			env.log_level = 100;
-			env.default_ado_wi_parent_url = "{Default work item parent url}";
+			env.defaul_ado_wi_parent_url = "{Default work item parent url}";
+			env.defaul_ado_wi_parent_id = "{Default work item parent id}";
 
             console.log("Set values from test payload");
             vm = getValuesFromPayload(testPayload, env)
@@ -200,24 +201,6 @@ async function create(vm) {
         }
     ];
 
-    // if area path is not empty, set it
-    if (vm.env.areaPath != "") {
-        patchDocument.push({
-            op: "add",
-            path: "/fields/System.AreaPath",
-            value: vm.env.areaPath
-        });
-    }
-
-    // if iteration path is not empty, set it
-    if (vm.env.iterationPath != "") {
-        patchDocument.push({
-            op: "add",
-            path: "/fields/System.IterationPath",
-            value: vm.env.iterationPath
-        });
-    }
-
     // if the bypassrules are on, then use the issue.sender.user.name value for the person
     // who created the issue
     if (vm.env.bypassRules) {
@@ -250,8 +233,6 @@ async function create(vm) {
         });
     }*/
 
-    
-
     // verbose logging
     if (vm.env.logLevel >= 300) {
         console.log("Print full patch object:");
@@ -260,8 +241,48 @@ async function create(vm) {
 
     let authHandler = azdev.getPersonalAccessTokenHandler(vm.env.adoToken);
     let connection = new azdev.WebApi(vm.env.orgUrl, authHandler);
+
     let client = await connection.getWorkItemTrackingApi();
     let workItemSaveResult = null;
+
+    try {
+        console.log("Log Info: getTeamIterations inside Try");
+
+        if(vm.env.parentWorkItemId != null || vm.env.parentWorkItemId != undefined || vm.env.parentWorkItemId != ''){
+
+            var workitemPaths = await client.getWorkItem(vm.env.parentWorkItemId,undefined, undefined, undefined, vm.env.project);
+
+            // check to see if the work item is null or undefined
+            if (workitemPaths === null || workitemPaths === undefined) {
+              console.log("Error getting parent workitem paths: workitemPaths is null or undefined");
+            }
+            else {
+
+              patchDocument.push({
+                op: 'add',
+                path: '/fields/System.IterationPath',
+                value: workitemPaths.fields["System.IterationPath"]
+              });
+            
+              patchDocument.push({
+                op: 'add',
+                path: '/fields/System.AreaPath',
+                value: workitemPaths.fields["System.AreaPath"]
+              });
+
+              //console.log(JSON.stringify(workitemPaths))
+              //console.log(workitemPaths.fields["System.AreaPath"])
+              //console.log(workitemPaths.fields["System.IterationPath"])
+
+            }
+
+          }
+        
+    } catch (error){
+        console.log("Error: getTeamIterations failed");
+        console.log(error);
+        core.setFailed(error);
+    }
 
     try {
         workItemSaveResult = await client.createWorkItem(
@@ -711,7 +732,8 @@ function getValuesFromPayload(payload, env) {
             activeState: env.ado_active_state != undefined ? env.ado_active_state : "Active",
             bypassRules: env.ado_bypassrules != undefined ? env.ado_bypassrules : false,
             logLevel: env.log_level != undefined ? env.log_level : 100,
-            parentWorkItemUrl: env.default_ado_wi_parent_url != undefined ? env.default_ado_wi_parent_url : "",
+            //parentWorkItemUrl: env.default_ado_wi_parent_url != undefined ? env.default_ado_wi_parent_url : "",
+            parentWorkItemId: env.default_ado_wi_parent_id != undefined ? env.default_ado_wi_parent_id : "",
         }
     };
 
@@ -790,6 +812,7 @@ async  function enrichingValuesBasedOnBodyReferences(vm){
             console.log(`Invalid Parent work item ID. No parent will be added.`);
         }
         else{
+            vm.env.parentWorkItemId = parentWorkItemId;
             vm.env.parentWorkItemUrl = parentWorkItem.url;
             console.log("A parent work item URL was added.");
             // removing references from body
@@ -800,6 +823,21 @@ async  function enrichingValuesBasedOnBodyReferences(vm){
     }
     else{
         console.log("No reference of ADO# was found.");
+
+        console.log("Getting the details of the default Parent work item.");
+        let parentWorkItem = await findWorkItem(vm, vm.env.parentWorkItemId);
+        
+        // if parentWorkItem == -1 then we have an error during find
+        if (parentWorkItem === -1) {
+            console.log("Parent Work item value is -1, exiting action");
+            core.setFailed();
+            return;
+        } else {
+
+            vm.env.parentWorkItemUrl = parentWorkItem.url;
+        
+        }
+
     }
     
     // verbose logging
