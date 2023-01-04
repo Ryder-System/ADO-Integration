@@ -782,7 +782,7 @@ function getValuesFromPayload(payload, env) {
 async  function enrichingValuesBasedOnBodyReferences(vm){
     // check for a reference to a parent work item id ADO# syntax
     console.log("Looking for ADO# syntax in the body.");
-    let matchResult = vm.body.match(/ADO#([^\s]+)/g);
+    let matchResult = vm.body.match(/ADO#([^\s][\d]+)/g);
     if(matchResult != null &&  matchResult.length > 0){
         if (matchResult.length > 1) {
             console.log("Multiple references of ADO# were found. We will use the first one.");
